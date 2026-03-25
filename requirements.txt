@@ -1,0 +1,14 @@
+scikit-learn
+pandas
+numpy
+requests
+streamlit
+plotly
+pydeck
+xgboost
+shap
+joblib
+matplotlib
+seaborn
+nbformat
+ipykernel

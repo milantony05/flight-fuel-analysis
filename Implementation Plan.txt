@@ -1,0 +1,95 @@
+Task:
+Create a two-part Data Science and Machine Learning project consisting of:
+
+A Jupyter Notebook for model training and analysis
+A Streamlit Dashboard for real-time global deployment
+
+Core Requirements
+
+Aviation and Sustainability
+
+Predict fuel flow and CO₂ emissions for global aircraft
+
+Machine Learning
+
+Train a regression model (Random Forest or XGBoost)
+Target: fuel_flow
+Input features:
+Altitude
+Speed
+Wind Impact
+
+Training Data
+
+Use a sample dataset such as:
+NASA C-MAPSS dataset, or
+OpenSky COVID-19 flight archive (available as free CSV files)
+This dataset will simulate the training environment
+
+Live Data (No API Keys Required)
+
+OpenSky API (anonymous):
+Endpoint: states/all
+Fetch global flight states
+Open-Meteo API (no key):
+Fetch:
+wind_speed_250hPa
+wind_direction_250hPa
+Use each flight’s latitude and longitude
+
+Part 1: Jupyter Notebook (analysis.ipynb)
+
+Feature Engineering
+
+Calculate True Airspeed
+Calculate Headwind Component using vector math
+
+Example formula:
+Impact = WindSpeed * cos(radians(FlightHeading - WindDirection))
+
+Machine Learning Training
+
+Build a pipeline that includes:
+Feature scaling
+Model training (Random Forest or XGBoost Regressor)
+Analyze Feature Importance:
+Determine whether altitude, speed, or wind has the greatest effect on fuel flow
+
+Model Evaluation
+
+Plot Actual vs Predicted fuel burn
+Assess model performance visually
+
+Part 2: Streamlit Dashboard (app.py)
+
+Real-Time Map
+
+Use st.pydeck_chart to display a global map
+Show the top 50 sampled flights
+
+Live ML Inference
+
+Apply the trained model to live API data
+Predict current fuel burn for each flight displayed on the map
+
+Sustainability KPI
+
+Global Carbon Intensity Score
+
+Compute:
+Total Predicted CO₂ Emissions ÷ Total Distance Flown
+
+Visualizations
+
+Display a distribution plot of predicted fuel efficiency across the tracked fleet
+
+Technical Constraints
+
+Handle empty or missing API responses gracefully
+Sample only 50–100 flights to avoid Open-Meteo rate limits
+Use only the following libraries:
+scikit-learn
+pandas
+requests
+streamlit
+plotly

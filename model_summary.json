@@ -1,0 +1,21 @@
+{
+  "best_model": "XGBoost",
+  "test_r2": 0.772,
+  "test_mae": 129.92,
+  "test_rmse": 169.42,
+  "n_training_samples": 64,
+  "n_test_samples": 16,
+  "features": [
+    "baro_altitude",
+    "velocity",
+    "true_airspeed",
+    "headwind",
+    "crosswind",
+    "air_density",
+    "mach_number",
+    "flight_level",
+    "abs_vertical_rate",
+    "wind_speed_250hPa",
+    "temperature_250hPa"
+  ]
+}

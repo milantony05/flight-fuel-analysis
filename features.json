@@ -1,0 +1,13 @@
+[
+  "baro_altitude",
+  "velocity",
+  "true_airspeed",
+  "headwind",
+  "crosswind",
+  "air_density",
+  "mach_number",
+  "flight_level",
+  "abs_vertical_rate",
+  "wind_speed_250hPa",
+  "temperature_250hPa"
+]
