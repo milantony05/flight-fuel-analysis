@@ -111,7 +111,7 @@ st.markdown("""
 # ──────────────────────────────────────────────────────────────────────
 
 @st.cache_data(ttl=300)
-def fetch_live_flights(n_sample=60):
+def fetch_live_flights(n_sample=200):
     """Fetch live flight data from OpenSky Network."""
     try:
         resp = requests.get(
@@ -200,18 +200,26 @@ def fetch_weather_batch(lats, lons):
 
 
 def engineer_features(df):
-    """Physics-based feature engineering."""
+    """Physics-based feature engineering with stable absolute target scaling."""
     df = df.copy()
     heading_rad = np.radians(df["true_track"])
     wind_dir_rad = np.radians(df["wind_direction_250hPa"])
 
+    # Wind components (features only — NOT encoded in target)
     df["headwind"] = df["wind_speed_250hPa"] * np.cos(heading_rad - wind_dir_rad)
     df["crosswind"] = df["wind_speed_250hPa"] * np.abs(np.sin(heading_rad - wind_dir_rad))
 
+    # True Airspeed: ground speed corrected for headwind
     wind_ms = df["wind_speed_250hPa"] / 3.6
     headwind_ms = wind_ms * np.cos(heading_rad - wind_dir_rad)
     df["true_airspeed"] = df["velocity"] + headwind_ms
 
+    # Air density (ISA model) — computed for feature use and target
+    rho_0 = 1.225        # kg/m³ at sea level
+    scale_height = 8500  # metres
+    df["air_density"] = rho_0 * np.exp(-df["baro_altitude"] / scale_height)
+
+    # Mach number
     temp_kelvin = (df["temperature_250hPa"] + 273.15).clip(lower=180)
     speed_of_sound = 20.05 * np.sqrt(temp_kelvin)
     df["mach_number"] = df["true_airspeed"] / speed_of_sound
@@ -220,6 +228,7 @@ def engineer_features(df):
     df["abs_vertical_rate"] = np.abs(df["vertical_rate"])
 
     return df
+
 
 
 def load_model():
@@ -261,7 +270,7 @@ def main():
 
     # ── Fetch Data ──
     with st.spinner("🛰️ Fetching live flights from OpenSky Network..."):
-        flights = fetch_live_flights(n_sample=60)
+        flights = fetch_live_flights(n_sample=200)
 
     if flights.empty:
         st.warning("No flight data available. OpenSky API may be temporarily unavailable.")
