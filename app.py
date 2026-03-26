@@ -536,33 +536,37 @@ def main():
         st.plotly_chart(fig3, use_container_width=True)
 
     with chart_col4:
-        # Feature contributions (use model feature importances if available)
+        # Feature contributions (SHAP native plot)
+        import shap
+        import matplotlib.pyplot as plt
+        
         trained_model = model.named_steps.get("model") if hasattr(model, "named_steps") else model
-        if hasattr(trained_model, "feature_importances_"):
-            feat_imp = pd.DataFrame({
-                "Feature": features,
-                "Importance": trained_model.feature_importances_,
-            }).sort_values("Importance", ascending=True)
-
-            fig4 = px.bar(
-                feat_imp, x="Importance", y="Feature",
-                orientation="h",
-                title="Feature Importance",
-                color="Importance",
-                color_continuous_scale="Viridis",
-                template="plotly_dark",
-            )
-            fig4.update_layout(
-                plot_bgcolor="rgba(0,0,0,0)",
-                paper_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Inter", color="#e0e6f0"),
-                height=380,
-                showlegend=False,
-                margin=dict(l=40, r=20, t=50, b=40),
-            )
-            st.plotly_chart(fig4, use_container_width=True)
-        else:
-            st.info("Feature importance not available for this model type.")
+        scaler = model.named_steps.get("scaler") if hasattr(model, "named_steps") else None
+        
+        try:
+            if scaler:
+                X_scaled = pd.DataFrame(scaler.transform(X), columns=features, index=X.index)
+            else:
+                X_scaled = X
+                
+            explainer = shap.TreeExplainer(trained_model)
+            shap_values = explainer.shap_values(X_scaled)
+            
+            # Create a matplotlib figure matching the standard SHAP output style
+            fig = plt.figure(figsize=(8, 6))
+            
+            # Using standard SHAP summary plot as requested
+            shap.summary_plot(shap_values, X_scaled, plot_type='bar', show=False, color='#008bfb')
+            plt.title("SHAP Feature Importance — XGBoost", fontsize=16, fontweight='bold', pad=20)
+            
+            # Force background colors to match the classic light-theme image structure requested
+            fig.patch.set_facecolor('white')
+            ax = plt.gca()
+            ax.set_facecolor('#eaeaf2')
+            
+            st.pyplot(fig, clear_figure=True, use_container_width=True)
+        except Exception as e:
+            st.info(f"SHAP feature importance not available: {e}")
 
     # ── Sustainability KPI ──
     st.markdown('<div class="section-header">🌱 Sustainability — Carbon Intensity</div>', unsafe_allow_html=True)
@@ -607,7 +611,7 @@ def main():
     display_cols = [
         "callsign", "origin_country", "baro_altitude", "velocity",
         "headwind", "mach_number", "predicted_fuel_flow", "co2_per_hour",
-        "efficiency_score"
+        "efficiency_score"\
     ]
     display_df = df[display_cols].copy()
     display_df.columns = [
