@@ -47,6 +47,13 @@ class ResearchProtocolTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_confirmation_frame(bad, self.protocol)
 
+    def test_confirmation_rejects_pre_freeze_intervals(self):
+        bad = self.frame.copy()
+        bad.loc[0, "interval_start_utc"] = "2025-09-20T00:00:00Z"
+        bad.loc[0, "interval_end_utc"] = "2025-09-20T00:10:00Z"
+        with self.assertRaises(ValueError):
+            validate_confirmation_frame(bad, self.protocol)
+
     def test_historical_stream_can_withhold_labels(self):
         source = HistoricalReplay(ROOT / "demo/index.html", reveal_delayed_labels=False)
         event = next(iter(source.events()))

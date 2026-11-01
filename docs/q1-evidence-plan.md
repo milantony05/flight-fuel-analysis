@@ -28,9 +28,9 @@ and primary settings that must be applied unchanged to new labels.
 
 ## New exploratory findings
 
-- Duration-Mondrian intervals reach 90.25% coverage with 422.54 kg mean width,
+- Duration-Mondrian intervals reach 90.23% coverage with 422.54 kg mean width,
   compared with 89.95% and 449.97 kg for the global construction.
-- Aircraft-Mondrian intervals reach 90.20% pooled coverage but are wider
+- Aircraft-Mondrian intervals reach 90.12% pooled coverage but are wider
   (579.05 kg) and fall to 87.88% for the worst eligible type.
 - Leave-one-aircraft-out risk calibration reaches 90.45% pooled coverage but
   only 75.76% for B744. The upstream fuel model was not held out.
@@ -56,3 +56,13 @@ It must show reference fuel as unavailable until an authorized delayed label is
 received. Historical replay can reveal the committed reference after simulated
 interval closure. The two modes must never be visually or analytically mixed.
 
+
+## September calibration caveat
+
+The new calibrator uses September evaluation labels in other folds. A row's own
+label is excluded from its isotonic fit, but it can change the scores of
+competing rows in the batch and thus the calibrated policy's selections. Ratio
+quantiles use scales fitted on the same training folds. Treat its accepted MAE
+and 90% empirical interval coverage as exploratory diagnostics, not an
+independent policy validation or a formal conformal guarantee. Fit the risk
+calibrator and quantiles on earlier disjoint flights for confirmation.

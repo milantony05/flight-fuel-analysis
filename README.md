@@ -2,21 +2,31 @@
 
 An interactive data science project that estimates fuel use for **completed flight intervals** from public flight tracking data, then checks **which flights those estimates cover and how accurate they are**. [Try the offline dashboard](demo/index.html) or [walk through the results in Jupyter](notebooks/eligibility-walkthrough.ipynb).
 
-## Optimization and reliability workspace
+## Optimization and reliability dashboard
 
-The `research-extension` branch preserves the original analysis and adds an
-**exact coverage-constrained selector**, five-fold out-of-fold isotonic risk
-calibration and scaled conformal prediction intervals. The professional
-workspace compares four policies, exposes bootstrap uncertainty and subgroup
+The research extension adds a **coverage-constrained selector**, five-fold
+out-of-fold isotonic risk calibration and empirical scaled prediction intervals.
+The dashboard compares four policies, exposes row-bootstrap uncertainty and subgroup
 reliability, supports multiple coverage and replay filters, and remains fully
 self-contained in [`demo/advanced.html`](demo/advanced.html).
 
-The publication-oriented layer additionally compares global, duration-Mondrian
+The exploratory research layer additionally compares global, duration-Mondrian
 and aircraft-Mondrian uncertainty, evaluates risk-calibrator transfer when each
 sufficiently large aircraft type is held out, audits natural ADS-B availability,
 and stress-tests the selector under score perturbations. A frozen prospective
 protocol in [`configs/confirmatory-protocol.json`](configs/confirmatory-protocol.json)
 defines the hypotheses and evidence required for a later untouched batch.
+
+**Evaluation boundary:** The original fuel and risk models use earlier time
+blocks, but this extension fits its uncertainty calibrators on other folds of
+the September evaluation rows. Even though each row's own interval fit excludes
+its label, the calibrated selection policy is learned from the evaluation
+batch as a whole: a row's label can influence the competing rows' scores.
+Its accepted-error comparison is therefore exploratory, not an independent
+validation of a deployable calibrated policy. The ratio quantiles also use
+in-sample fitted scales, so the reported 90% coverage is empirical rather than
+a finite-sample conformal guarantee. A future test must train and calibrate on
+earlier disjoint flights and freeze decisions before inspecting new labels.
 
 The replay uses committed historical benchmark rows; it is not a live aircraft
 feed. A live system would require rolling-window retraining, approved telemetry
@@ -28,8 +38,8 @@ the upstream project and this fork's additions.
 
 - Global cross-fitted intervals reach **89.95%** empirical coverage with a
   **449.97 kg** mean width.
-- Duration-Mondrian intervals reach **90.25%** coverage with a narrower
-  **422.54 kg** mean width and only a **0.23 percentage-point** eligible-group
+- Duration-Mondrian intervals reach **90.23%** coverage with a narrower
+  **422.54 kg** mean width and only a **0.26 percentage-point** eligible-group
   coverage gap on this exploratory benchmark.
 - Aircraft-Mondrian intervals are wider (**579.05 kg**) and still reach only
   **87.88%** coverage for the worst eligible aircraft group.
@@ -129,6 +139,6 @@ The contribution is a **dataset-specific, transparent coverage/error audit**, no
 | [`notebooks/`](notebooks/) | Presentation-friendly analysis of committed results. |
 | [`reports/`](reports/) | Generated result JSON and the historical Phase 4 record. |
 | [`tests/`](tests/) | Decision-rule, accounting and dashboard checks. |
-| [`paper/`](paper/) | Publication-stage LaTeX manuscript source (opens with live PDF preview in Codex). |
+| [`paper/`](paper/) | Exploratory LaTeX manuscript draft with explicit validation limits. |
 
 Data: [EUROCONTROL PRC 2025 Aircraft Fuel Burn Estimation Data Challenge](https://doi.org/10.5281/zenodo.19184662), combining ACARS-derived fuel labels with OpenSky ADS-B records and metadata, licensed CC BY 4.0. Cite the [dataset paper](https://doi.org/10.59490/joas.2026.8750). This repository does not contain the raw dataset.

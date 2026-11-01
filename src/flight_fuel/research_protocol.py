@@ -45,6 +45,9 @@ def validate_confirmation_frame(frame: pd.DataFrame, protocol: dict) -> dict:
     end = pd.to_datetime(frame.interval_end_utc, utc=True, errors="coerce")
     if start.isna().any() or end.isna().any() or (end <= start).any():
         raise ValueError("Intervals require valid UTC start and end times")
+    freeze_day = pd.Timestamp(protocol["frozen_on"], tz="UTC")
+    if (start < freeze_day + pd.Timedelta(days=1)).any():
+        raise ValueError("Confirmation intervals must begin after the protocol freeze day")
     numeric = frame[[
         "predicted_fuel_kg", "reference_fuel_kg",
         "predicted_error_risk_kg", "adsb_position_count",

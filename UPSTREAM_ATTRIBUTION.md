@@ -1,17 +1,14 @@
-# Upstream attribution and research-extension boundary
+# Contribution history
 
-This repository is a fork of
-[`milantony05/flight-fuel-analysis`](https://github.com/milantony05/flight-fuel-analysis).
-The upstream author retains authorship of the original data pipeline, models,
-reports, notebook and offline eligibility dashboard.
+The original data pipeline, models, reports, notebook and eligibility dashboard
+were developed in this repository by its original contributors. The additional
+research extension was contributed in six commits by Haarika Alla from
+[`haarikaalla/flight-fuel-analysis`](https://github.com/haarikaalla/flight-fuel-analysis/tree/research-extension).
 
-The `research-extension` branch adds an optimization-based constrained
+The contribution adds an optimization-based constrained
 selector, per-decision explanations, an advanced historical replay dashboard,
 reproducible packaging and continuous integration. These additions must not be
-described as changes made by the upstream author.
+described as work done solely by the original author.
 
-At the time this fork was created, the upstream repository did not include a
-software license. Obtain explicit permission from the upstream author before
-redistributing or publishing derivative software, and ask the author to add an
-appropriate license. Dataset licensing and citation requirements are separate
-from software permission.
+The repository does not currently specify a software license. Dataset licensing
+and citation requirements are separate from permission to reuse the software.

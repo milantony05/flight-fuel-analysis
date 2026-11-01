@@ -54,7 +54,7 @@ def rows_frame(payload: dict) -> pd.DataFrame:
         raise ValueError("Dashboard payload rows must be a nonempty list")
     frame = pd.DataFrame(rows, columns=ROW_COLUMNS)
     numeric = [name for name in ROW_COLUMNS if name != "aircraft_type"]
-    if frame[numeric].isna().any().any():
+    if not np.isfinite(frame[numeric].to_numpy(dtype=float)).all():
         raise ValueError("Advanced analysis requires finite committed demo rows")
     frame["flight_id"] = [f"replay-{i:05d}" for i in range(len(frame))]
     frame["fuel_kg"] = frame.reference_fuel_kg.astype(float)
@@ -70,11 +70,13 @@ def cross_fitted_uncertainty(
     folds: int = 5,
     interval_level: float = 0.9,
 ) -> tuple[np.ndarray, np.ndarray, dict]:
-    """Calibrate risk and interval width without fitting on a row's own label.
+    """Explore risk and interval width without fitting on a row's own label.
 
     Each deterministic fold receives predictions from an isotonic model fitted
     on the other folds. A scaled conformal quantile from those training folds
     then produces an out-of-fold interval half-width for the held-out rows.
+    The ratio scores use in-sample fitted scales; coverage is empirical and
+    no finite-sample conformal guarantee is asserted.
     """
     risk, predicted, truth, ties = (
         np.asarray(values, dtype=float) for values in (risk, predicted, truth, ties)
@@ -167,7 +169,7 @@ def cross_fitted_mondrian_uncertainty(
     )
     groups = np.asarray(groups).astype(str)
     n = len(risk)
-    if any(len(values) != n for values in (predicted, truth, ties, groups)):
+    if folds < 2 or n < folds or any(len(values) != n for values in (predicted, truth, ties, groups)):
         raise ValueError("Mondrian uncertainty inputs must have equal length")
     if min_group_n < 2:
         raise ValueError("min_group_n must be at least two")
@@ -495,6 +497,8 @@ def constrained_select(
         raise ValueError("Nonempty, equally sized arrays required")
     if not np.isfinite(scores).all() or not np.isfinite(ties).all():
         raise ValueError("Scores and ties must be finite")
+    if (ties < 0).any() or (ties >= 1).any():
+        raise ValueError("Stable tie values must be in [0, 1)")
     if not (0 < target <= 1 and 0 <= floor <= 1 and min_type_n >= 1):
         raise ValueError("Invalid target, floor or minimum aircraft group size")
 
@@ -617,7 +621,7 @@ def _selective_curve_summary(pareto: list[dict]) -> list[dict]:
         coverage = np.asarray([row["actual_coverage"] for row in values], dtype=float)
         risk = np.asarray([row["accepted_mae_kg"] for row in values], dtype=float)
         span = float(coverage[-1] - coverage[0])
-        area = float(np.trapezoid(risk, coverage))
+        area = float(np.sum(np.diff(coverage) * (risk[:-1] + risk[1:]) / 2))
         rows.append({
             "policy": name,
             "coverage_min": float(coverage[0]),
@@ -735,8 +739,8 @@ def analyze(
         raise RuntimeError("Default target was not evaluated")
     decision_reasons(default_masks["optimized"], default_masks["risk"], types, duration, min_type_n)
     report = {
-        "status": "Validated historical benchmark dashboard",
-        "evaluation_scope": "Cross-fitted diagnostics on committed September benchmark rows",
+        "status": "Exploratory historical benchmark dashboard",
+        "evaluation_scope": "Cross-fitted exploratory diagnostics on committed September benchmark rows; calibrated batch selection uses evaluation labels indirectly",
         "target": target,
         "floor": floor,
         "min_aircraft_group_n": min_type_n,

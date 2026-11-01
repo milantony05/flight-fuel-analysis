@@ -15,7 +15,7 @@
 \maketitle
 
 \begin{abstract}
-Open surveillance data enable scalable aircraft fuel estimation but create a second decision problem: which estimates should be served when trajectory quality and predictive reliability differ across aircraft and interval durations? Naive risk ranking lowers average error by abstaining on difficult cases, yet can almost remove long intervals and wide-body aircraft from the reported sample. We formulate fuel-estimate eligibility as coverage-constrained selective regression and evaluate greedy, mixed-integer, and calibrated policies on 7,619 chronologically later intervals from the EUROCONTROL PRC 2025 benchmark. The complete fuel model has 96.07\,kg mean absolute error (MAE), while unconstrained 75\% risk selection reaches 44.23\,kg accepted MAE but represents only 29.77\% of reference fuel and produces extreme subgroup coverage gaps. A calibrated group-floor policy raises represented reference fuel to 41.85\% with 55.40\,kg accepted MAE. Cross-fitted duration-Mondrian uncertainty reaches 90.25\% empirical coverage with a 422.54\,kg mean interval width, improving upon the 449.97\,kg global width, whereas aircraft-Mondrian and leave-one-aircraft-out diagnostics reveal substantial transfer failure. Zero-position intervals have 163.22\,kg MAE versus 68.84\,kg for intervals with at least 51 ADS-B positions. These results show that selective accuracy, uncertainty validity, and representation must be audited jointly. The study is exploratory; a frozen protocol specifies the independent temporal and external validation required before confirmatory or operational claims.
+Open surveillance data enable scalable aircraft fuel estimation but create a second decision problem: which estimates should be served when trajectory quality and predictive reliability differ across aircraft and interval durations? Naive risk ranking lowers average error by abstaining on difficult cases, yet can almost remove long intervals and wide-body aircraft from the reported sample. We formulate fuel-estimate eligibility as coverage-constrained selective regression and evaluate greedy, mixed-integer, and calibrated policies on 7,619 chronologically later intervals from the EUROCONTROL PRC 2025 benchmark. The complete fuel model has 96.07\,kg mean absolute error (MAE), while unconstrained 75\% risk selection reaches 44.23\,kg accepted MAE but represents only 29.77\% of reference fuel and produces extreme subgroup coverage gaps. An exploratory cross-fitted calibrated group-floor policy raises represented reference fuel to 41.85\% with 55.40\,kg accepted MAE. Cross-fitted duration-Mondrian uncertainty reaches 90.23\% empirical coverage with a 422.54\,kg mean interval width, improving upon the 449.97\,kg global width, whereas aircraft-Mondrian and leave-one-aircraft-out diagnostics reveal substantial transfer failure. Zero-position intervals have 163.22\,kg MAE versus 68.84\,kg for intervals with at least 51 ADS-B positions. These results show that selective accuracy, uncertainty validity, and representation must be audited jointly. The study is exploratory; a frozen protocol specifies the independent temporal and external validation required before confirmatory or operational claims.
 \end{abstract}
 
 \section{Introduction}
@@ -42,7 +42,7 @@ Selective regression permits abstention on uncertain cases, but subgroup perform
 \section{Data and Leakage Controls}
 The upstream workflow fits the fuel model on April--August 2025, fits an absolute-error ranking model on 1--9 September, reserves 10--18 September for calibration, and evaluates the interactive batch on 19--27 September. Flights crossing block boundaries are excluded rather than split. October was inspected during development and is not treated as untouched confirmation.
 
-Inputs include aircraft type, interval duration, and ADS-B trajectory summaries. No fuel field is used as an estimator or selection feature. The target is the difference between reported fuel-on-board values, not direct fuel-flow measurement. Payload, takeoff mass, engine variant, wind, and weather are absent. The dashboard contains pre-scored historical intervals; labels are used only after decisions for evaluation.
+Inputs include aircraft type, interval duration, and ADS-B trajectory summaries. No fuel field is used as an estimator or selection feature. The target is the difference between reported fuel-on-board values, not direct fuel-flow measurement. Payload, takeoff mass, engine variant, wind, and weather are absent. The dashboard contains pre-scored historical intervals. The original risk-only, greedy and optimized selection policies use scores learned before the evaluation block. The calibrated policy and interval diagnostics additionally use September evaluation labels through cross-fitting; this is exploratory batch analysis rather than untouched validation.
 
 \section{Methods}
 \subsection{Fuel and risk models}
@@ -51,12 +51,12 @@ A histogram gradient boosting model estimates interval fuel from aircraft and tr
 \subsection{Coverage-constrained selection}
 For binary decision $z_i$, the exact policy solves
 \[
-  \min_{z\in\{0,1\}^n}\sum_i z_i\hat r_i
+  \min_{z\in\{0,1\}^n}\sum_i z_i(M+\tilde r_i)
 \]
-subject to an overall coverage target and minimum coverage for every duration group and aircraft group with at least 50 rows. A large count penalty prevents unnecessary selections when constraints already exceed the nominal budget. We compare this mixed-integer policy with unconstrained risk ranking, a deterministic greedy floor, and a calibrated-risk floor.
+subject to an overall coverage target and minimum coverage for every duration group and aircraft group with at least 50 rows. Here $\tilde r_i$ is min--max normalized predicted error risk and $M>n$ makes the number of selected rows the primary objective; normalized risk breaks ties. This prevents unnecessary selections when constraints already exceed the nominal budget. We compare this mixed-integer policy with unconstrained risk ranking, a deterministic greedy floor, and a calibrated-risk floor.
 
 \subsection{Uncertainty}
-Five deterministic folds are formed from stable row hashes. In each fold, isotonic regression maps risk to absolute error using only the other folds. Scaled conformal residuals construct nominal 90\% intervals. Global, duration-Mondrian, and aircraft-Mondrian multipliers are compared; groups below the minimum sample size fall back to the global multiplier. A separate diagnostic removes each sufficiently large aircraft type from risk-calibrator fitting and evaluates it as an unseen calibration group. This does not hold the upstream fuel model out.
+Five deterministic folds are formed from stable row hashes. In each fold, isotonic regression maps risk to absolute error using only the other folds. Empirical scaled-ratio quantiles construct nominal 90\% intervals. The ratio scores are computed on data used to fit the isotonic map, so these are cross-fitted diagnostics without a split-conformal finite-sample coverage guarantee. Although a row's own interval fit excludes its label, that label can affect other folds' scores and therefore its own rank-based batch selection indirectly. Global, duration-Mondrian, and aircraft-Mondrian multipliers are compared; groups below the minimum sample size fall back to the global multiplier. A separate diagnostic removes each sufficiently large aircraft type from risk-calibrator fitting and evaluates it as an unseen calibration group. This does not hold the upstream fuel model out.
 
 \subsection{Robustness and statistics}
 We report MAE, RMSE, bias, $R^2$, accepted and rejected error, reference-fuel share, subgroup coverage gaps, worst-group error, interval coverage and width, and risk--coverage curves. A deterministic sensitivity analysis perturbs calibrated risk scores at 10\%, 25\%, and 50\% of their standard deviation over 100 repetitions. Row bootstrap intervals in the current dashboard are exploratory. The frozen confirmatory protocol requires 2,000 flight-cluster bootstrap repetitions and Holm correction within subgroup families.
@@ -77,7 +77,7 @@ Policy & Accepted MAE & Fuel share & Duration gap & Aircraft gap\\
 Risk ranking & 44.23 & 29.77 & 93.37 & 91.83\\
 Greedy group floor & 54.02 & 41.51 & 35.69 & 39.38\\
 Exact constrained & 54.63 & 41.31 & 35.90 & 39.38\\
-Calibrated risk + floor & 55.40 & 41.85 & 35.78 & 39.44\\
+Exploratory calibrated + floor & 55.40 & 41.85 & 35.78 & 39.44\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -93,13 +93,13 @@ The risk-only result is numerically best on served rows but highly unrepresentat
 Method & Coverage (\%) & Mean width (kg) & Worst eligible group (\%)\\
 \midrule
 Global scaled conformal & 89.95 & 449.97 & --\\
-Duration-Mondrian & 90.25 & 422.54 & 90.22\\
-Aircraft-Mondrian & 90.20 & 579.05 & 87.88\\
+Duration-Mondrian & 90.23 & 422.54 & 90.19\\
+Aircraft-Mondrian & 90.12 & 579.05 & 87.88\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Duration conditioning improves both width and uniformity on this benchmark. Aircraft conditioning is substantially wider and still misses the nominal target for the worst eligible type. When the risk calibrator is trained without each aircraft type in turn, pooled coverage is 90.45\%, but worst-type coverage is 75.76\% for B744, with a 2,346\,kg mean interval width. This is evidence against assuming type transfer from pooled results.
+Duration conditioning improves both width and uniformity on this exploratory benchmark. Aircraft conditioning is substantially wider and still misses the nominal target for the worst eligible type. When the risk calibrator is trained without each aircraft type in turn, pooled coverage is 90.45\%, but worst-type coverage is 75.76\% for B744, with a 2,346\,kg mean interval width. This is evidence against assuming type transfer from pooled results.
 
 \subsection{Data quality and stability}
 Zero-position intervals have 163.22\,kg MAE and 84.88\% global-interval coverage; intervals with at least 51 positions have 68.84\,kg MAE and 92.06\% coverage. Because missingness reflects routes, receivers, aircraft, and operations, this is associational. At risk-noise levels of 10\%, 25\%, and 50\% of score standard deviation, mean selection Jaccard overlap is 92.87\%, 85.10\%, and 76.80\%, while accepted MAE rises to 55.43, 58.15, and 63.44\,kg.
@@ -110,7 +110,7 @@ Three findings are central. First, abstention is not neutral: ranking can create
 The exact optimizer is not automatically superior in observed MAE because it optimizes predicted risk, not labels. This distinction is important: an optimizer can solve the declared mathematical problem exactly while the learned objective remains imperfect. The duration-Mondrian result suggests a useful conditioning axis, but it was discovered on the exploratory benchmark and must be confirmed prospectively.
 
 \section{Limitations and Confirmatory Plan}
-The present study uses one public benchmark and pre-scored validation rows. October labels influenced development. Row-bootstrap intervals do not respect flight clustering. The current artifact cannot refit CatBoost, temporal neural models, OpenAP hybrids, or weather-enriched models because raw trajectories and enrichment data are not committed. The ACARS-derived label is noisy and is not a certified sensor measurement.
+The present study uses one public benchmark and pre-scored validation rows. Its new calibration and uncertainty variants are fitted using the September evaluation batch by cross-fitting; their reported coverage and calibrated-policy accepted error are exploratory, and the latter may have indirect batch-level label dependence. They are not independent confirmatory results. October labels influenced development. Row-bootstrap intervals do not respect flight clustering. The current artifact cannot refit CatBoost, temporal neural models, OpenAP hybrids, or weather-enriched models because raw trajectories and enrichment data are not committed. The ACARS-derived label is noisy and is not a certified sensor measurement.
 
 Before confirmatory claims, the frozen protocol requires: (i) an untouched later or external operator/geography batch; (ii) temporal, route-disjoint, and aircraft-type holdouts; (iii) physics-only, boosting, hybrid, and temporal baselines on the same availability contract; (iv) strict earlier split conformal and shift-weighted sensitivity; (v) natural and simulated contiguous outage tests; and (vi) flight-cluster uncertainty with multiplicity control. An approved live source must respect provider licensing and must not display reference fuel before delayed ground truth exists.
 

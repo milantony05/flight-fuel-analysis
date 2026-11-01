@@ -8,13 +8,13 @@ ADS-B observations and temporal or route distribution shift?
 
 ## Completed engineering milestone
 
-- Preserved the upstream analysis without changing its repository.
+- Integrated the original analysis with the teammate's six extension commits.
 - Added a mixed-integer minimum-risk selector with explicit overall, duration
   and sufficiently represented aircraft-group constraints.
 - Added decision explanations that distinguish low-risk inclusion from
   constraint-driven inclusion.
-- Added five-fold out-of-fold isotonic error calibration and scaled conformal
-  90% interval diagnostics without fitting a row's uncertainty on its own label.
+- Added five-fold out-of-fold isotonic error calibration and exploratory
+  scaled-ratio 90% interval diagnostics without fitting a row's uncertainty on its own label.
 - Added row-bootstrap confidence intervals, calibration bins, subgroup
   reliability tables and an additional calibrated group-floor policy.
 - Added a self-contained professional dashboard with four policy choices,
@@ -27,7 +27,7 @@ ADS-B observations and temporal or route distribution shift?
   availability analysis and deterministic risk-score perturbation tests.
 - Added a prospective confirmatory protocol, external-batch schema validation,
   stable dataset fingerprints, a provider-safe streaming contract and a
-  compiled LaTeX manuscript draft.
+  LaTeX manuscript draft.
 
 ## Next scientific milestone: independently validated uncertainty
 
@@ -42,7 +42,7 @@ ADS-B observations and temporal or route distribution shift?
 5. Never calibrate intervals on the committed September validation labels used
    for the headline selector comparison.
 
-The software paths and hypotheses for this milestone are now frozen in
+The planned hypotheses and settings are recorded in
 `configs/confirmatory-protocol.json`. They remain pending because no post-freeze
 confirmatory labels are present in this repository.
 
@@ -66,8 +66,7 @@ unchanged.
 
 Build two adapters behind one interface:
 
-1. **Historical replay** — the default reproducible mode. Stream cached ADS-B
-   records through rolling windows, reveal labels only after each window closes,
+1. **Historical replay** — the default reproducible mode. Replay cached, pre-scored historical intervals, reveal their committed labels after the simulated interval closes,
    and compute delayed evaluation metrics.
 2. **Approved live telemetry** — an optional adapter enabled only after the
    provider's authentication, rate-limit and licensing requirements are met.
@@ -84,9 +83,14 @@ state source -> flight state store -> rolling feature extractor
 
 ## Publication boundary
 
-The selector, calibration diagnostics and dashboard are meaningful engineering
+The selector, exploratory calibration diagnostics and dashboard are meaningful engineering
 and experimental contributions, not a guarantee of journal acceptance. A
 strong paper requires a
 clear comparison with selective-regression and fairness-constrained baselines,
 an untouched confirmatory dataset, calibrated uncertainty, independent
 reproduction and appropriately narrow aviation claims.
+
+The current cross-fitted calibrator is learned from the September evaluation
+batch and its scaled-ratio quantiles do not establish a formal conformal
+coverage guarantee. Its policy comparison can have indirect batch-level label
+dependence. See the evaluation boundary in the README.
