@@ -1,13 +1,13 @@
 # Flight Fuel Analysis: Coverage and Error Audit
 
-An interactive data science project that estimates fuel use for **completed flight intervals** from public flight tracking data, then checks **which flights those estimates cover and how accurate they are**. [Try the offline dashboard](demo/index.html) or [walk through the results in Jupyter](notebooks/eligibility-walkthrough.ipynb).
+An interactive data science project that estimates fuel use for **completed flight intervals** from public flight tracking data, then checks **which flights those estimates cover and how accurate they are**. [Open the presentation demo](demo/advanced.html) or [walk through the results in Jupyter](notebooks/eligibility-walkthrough.ipynb).
 
 ## Optimization and reliability dashboard
 
 The research extension adds a **coverage-constrained selector**, five-fold
 out-of-fold isotonic risk calibration and empirical scaled prediction intervals.
-The dashboard compares four policies, exposes row-bootstrap uncertainty and subgroup
-reliability, supports multiple coverage and replay filters, and remains fully
+The dashboard compares four policies, shows subgroup access and empirical
+reliability, includes a guided presentation and interval inspector, and remains fully
 self-contained in [`demo/advanced.html`](demo/advanced.html).
 
 The exploratory research layer additionally compares global, duration-Mondrian
@@ -82,7 +82,10 @@ At the same **75.01%** overall acceptance on **7,619 September validation interv
 
 ## Explore and reproduce
 
-- Open [`demo/index.html`](demo/index.html) in a browser. Set **overall target = 75%**, then switch the group floor between **0%** and **50%**. Compare the duration and aircraft tables, accepted error and labeled-fuel share.
+- **Use one demo:** download and open [`demo/advanced.html`](demo/advanced.html) in Chrome, Edge or Firefox. It works offline; no Python installation, server or API key is needed. GitHub's file viewer displays source, so download the file before opening it.
+- **Three-minute presentation:** click **01 Select the easiest** and point out the duration exclusions. Click **02 Restore group access** and compare accepted MAE, fuel represented and B744 access. Click **03 Solve the constraints** to explain why optimizing predicted risk does not guarantee lower observed error. Finally, **04 Inspect reliability** shows why average uncertainty coverage can hide weak aircraft groups.
+- Use the aircraft filter in the **Historical interval inspector** to explain an individual selection decision. The prediction is cached; changing policies changes inclusion, not the fuel prediction.
+- `demo/advanced-template.html` is the maintained presentation source. `demo/index.html` retains the original benchmark payload needed by the analysis and notebook; it is not the recommended presentation entry point.
 - Open the [Jupyter walkthrough](notebooks/eligibility-walkthrough.ipynb) for the result tables, access chart, residual diagnostics and route-overlap check.
 - To rebuild the analysis from the publisher's data, use Python 3.11+ and allow roughly 5 GB for the trajectory archives plus extraction space:
 
