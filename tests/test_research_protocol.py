@@ -55,7 +55,7 @@ class ResearchProtocolTests(unittest.TestCase):
             validate_confirmation_frame(bad, self.protocol)
 
     def test_historical_stream_can_withhold_labels(self):
-        source = HistoricalReplay(ROOT / "demo/index.html", reveal_delayed_labels=False)
+        source = HistoricalReplay(ROOT / "data/benchmark-source.html", reveal_delayed_labels=False)
         event = next(iter(source.events()))
         self.assertEqual(event.source, "historical_replay")
         self.assertIsNone(event.reference_fuel_kg)

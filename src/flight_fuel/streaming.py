@@ -79,7 +79,7 @@ class ApprovedLiveTelemetry:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source-demo", type=Path, default=Path("demo/index.html"))
+    parser.add_argument("--source-demo", type=Path, default=Path("data/benchmark-source.html"))
     parser.add_argument("--limit", type=int, default=20)
     parser.add_argument("--pace-seconds", type=float, default=0.0)
     parser.add_argument("--withhold-labels", action="store_true")

@@ -815,9 +815,9 @@ def render(template: str, payload: dict) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source-demo", type=Path, default=Path("demo/index.html"))
-    parser.add_argument("--template", type=Path, default=Path("demo/advanced-template.html"))
-    parser.add_argument("--dashboard", type=Path, default=Path("demo/advanced.html"))
+    parser.add_argument("--source-demo", type=Path, default=Path("data/benchmark-source.html"))
+    parser.add_argument("--template", type=Path, default=Path("src/flight_fuel/demo-template.html"))
+    parser.add_argument("--dashboard", type=Path, default=Path("demo/index.html"))
     parser.add_argument("--report", type=Path, default=Path("reports/advanced-results.json"))
     parser.add_argument("--target", type=float, default=0.75)
     parser.add_argument("--floor", type=float, default=0.5)

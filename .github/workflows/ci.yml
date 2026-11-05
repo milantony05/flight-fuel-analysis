@@ -48,7 +48,7 @@ jobs:
           protocol = json.loads(Path("configs/confirmatory-protocol.json").read_text())
           assert protocol["status"] == "prospective_protocol_no_confirmatory_labels_loaded"
           assert {row["id"] for row in protocol["primary_hypotheses"]} == {"H1", "H2", "H3"}
-          dashboard = Path("demo/advanced.html").read_text()
+          dashboard = Path("demo/index.html").read_text()
           assert "Flight Fuel Intelligence Dashboard" in dashboard
           assert "Robustness and transfer diagnostics" in dashboard
           assert "Publication evidence boundary" in dashboard

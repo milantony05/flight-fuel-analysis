@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 @unittest.skipUnless(shutil.which("node"), "Node.js required for JavaScript integration check")
 class DashboardTests(unittest.TestCase):
     def test_live_javascript_matches_committed_python_scores(self):
-        html = (ROOT / "demo/index.html").read_text()
+        html = (ROOT / "data/benchmark-source.html").read_text()
         source = html.split("<script>", 1)[1].split("</script>", 1)[0]
         startup = "['target','floor'].forEach(id=>$(id).addEventListener('change',update));update();"
         self.assertEqual(source.count(startup), 1)

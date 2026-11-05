@@ -1,6 +1,6 @@
 # Flight Fuel Analysis: Coverage and Error Audit
 
-An interactive data science project that estimates fuel use for **completed flight intervals** from public flight tracking data, then checks **which flights those estimates cover and how accurate they are**. [Open the presentation demo](demo/advanced.html) or [walk through the results in Jupyter](notebooks/eligibility-walkthrough.ipynb).
+An interactive data science project that estimates fuel use for **completed flight intervals** from public flight tracking data, then checks **which flights those estimates cover and how accurate they are**. [Open the presentation demo](demo/index.html) or [walk through the results in Jupyter](notebooks/eligibility-walkthrough.ipynb).
 
 ## Optimization and reliability dashboard
 
@@ -8,7 +8,7 @@ The research extension adds a **coverage-constrained selector**, five-fold
 out-of-fold isotonic risk calibration and empirical scaled prediction intervals.
 The visual demo embeds its aircraft image and replays three illustrative historical
 intervals before showing full-period prediction and coverage results. It remains fully
-self-contained in [`demo/advanced.html`](demo/advanced.html).
+self-contained in [`demo/index.html`](demo/index.html).
 
 The exploratory research layer additionally compares global, duration-Mondrian
 and aircraft-Mondrian uncertainty, evaluates risk-calibrator transfer when each
@@ -82,10 +82,10 @@ At the same **75.01%** overall acceptance on **7,619 September validation interv
 
 ## Explore and reproduce
 
-- **Use one demo:** download and open [`demo/advanced.html`](demo/advanced.html) in Chrome, Edge or Firefox. It works offline; no Python installation, server or API key is needed. GitHub's file viewer displays source, so download the file before opening it.
-- **Three-minute presentation:** start with the problem in the hero: public flight tracks do not show fuel use. In **Replay a real completed flight interval**, choose an aircraft and press replay. Compare the estimate with the recorded fuel change. Explain that these three examples are illustrative, then move to the full-period result cards: 7,619 intervals, 96.07 kg unfiltered MAE, and a coverage rule that retains 75% while including at least half of eligible groups. Finish with **What we can defend** and the limitations.
-- The animated flight is schematic and the chosen examples are not a random sample. The committed report and tests hold the full evaluation results.
-- `demo/advanced-template.html` is the maintained presentation source. `demo/index.html` retains the original benchmark payload needed by the analysis and notebook; it is not the recommended presentation entry point.
+- **Use one demo:** download and open [`demo/index.html`](demo/index.html) in Chrome, Edge or Firefox. It works offline; no Python installation, server or API key is needed. GitHub's file viewer displays source, so download the file before opening it.
+- **Three-minute presentation:** explain the problem in the hero, then use the cohort explorer. Choose an aircraft, change maximum interval duration and toggle tracking availability. The count, average error, median estimated fuel, error distribution and individual example update from historical records. Compare **All records** with **Coverage-aware 75%** and end with the full evaluation cards and limitations.
+- The controls filter committed historical predictions; they do not synthesize a new flight or estimate fuel from user-entered payload or weather. The dataset and trained model do not support those inputs.
+- `src/flight_fuel/demo-template.html` is the maintained source for this one-file demo. `data/benchmark-source.html` is the committed benchmark source required by analysis and replay tests.
 - Open the [Jupyter walkthrough](notebooks/eligibility-walkthrough.ipynb) for the result tables, access chart, residual diagnostics and route-overlap check.
 - To rebuild the analysis from the publisher's data, use Python 3.11+ and allow roughly 5 GB for the trajectory archives plus extraction space:
 
@@ -107,10 +107,10 @@ python -m venv .venv
 .venv/bin/python -m http.server 8000
 ```
 
-Then open `http://localhost:8000/demo/advanced.html`, or open the generated file
+Then open `http://localhost:8000/demo/index.html`, or open the generated file
 directly because it is self-contained. The command reads the committed benchmark
 payload and regenerates both `reports/advanced-results.json` and
-`demo/advanced.html`.
+`demo/index.html`.
 
 To inspect the provider-safe event contract without revealing historical
 labels, run:
@@ -122,7 +122,7 @@ labels, run:
 The live-provider class intentionally refuses to operate without an explicitly
 approved provider. It never invents a real-time reference-fuel value.
 
-Raw data and extracted features are excluded from Git. Downloads are checked against publisher MD5 values. The final analysis command regenerates `reports/eligibility-results.json` and `demo/index.html`.
+Raw data and extracted features are excluded from Git. Downloads are checked against publisher MD5 values. The final analysis command regenerates `reports/eligibility-results.json` and `data/benchmark-source.html`.
 
 ## Scope and limitations
 
