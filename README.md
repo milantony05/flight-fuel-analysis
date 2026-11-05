@@ -6,8 +6,9 @@ An interactive data science project that estimates fuel use for **completed flig
 
 The research extension adds a **coverage-constrained selector**, five-fold
 out-of-fold isotonic risk calibration and empirical scaled prediction intervals.
-The dashboard compares four policies, shows subgroup access and empirical
-reliability, includes a guided presentation and interval inspector, and remains fully
+The visual demo embeds its aircraft image, compares four policies, shows subgroup
+access and empirical reliability, includes a guided presentation and interval inspector,
+and remains fully
 self-contained in [`demo/advanced.html`](demo/advanced.html).
 
 The exploratory research layer additionally compares global, duration-Mondrian
