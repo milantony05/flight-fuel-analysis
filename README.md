@@ -6,9 +6,9 @@ An interactive data science project that estimates fuel use for **completed flig
 
 The research extension adds a **coverage-constrained selector**, five-fold
 out-of-fold isotonic risk calibration and empirical scaled prediction intervals.
-The visual demo embeds its aircraft image, compares four policies, shows subgroup
-access and empirical reliability, includes a guided presentation and interval inspector,
-and remains fully
+The visual demo embeds its aircraft image and shows every historical interval as a dot.
+Its two-rule comparison exposes how a lower average error can omit particular groups.
+It remains fully
 self-contained in [`demo/advanced.html`](demo/advanced.html).
 
 The exploratory research layer additionally compares global, duration-Mondrian
@@ -84,8 +84,8 @@ At the same **75.01%** overall acceptance on **7,619 September validation interv
 ## Explore and reproduce
 
 - **Use one demo:** download and open [`demo/advanced.html`](demo/advanced.html) in Chrome, Edge or Firefox. It works offline; no Python installation, server or API key is needed. GitHub's file viewer displays source, so download the file before opening it.
-- **Three-minute presentation:** open the demo and explain who needs fuel estimates. Click **Watch the change**; it automatically walks through the easiest-only, group-inclusion and balanced selections. Point out the longer-interval bars, the Boeing 747-400 example, and how the average error changes. Then scroll to **Does it work for everyone?** for the historical uncertainty and sparse tracking checks. **Explore other settings** reveals optional manual controls.
-- Use the aircraft filter in **See a real example** to explain an individual selection decision. The prediction is cached; changing policies changes inclusion, not the fuel prediction.
+- **Three-minute presentation:** start with the question in the hero: an accurate-looking fuel dataset can omit harder flights. Scroll to **The experiment**: every dot is one of 7,619 historical flight intervals. Switch between **Keep easiest estimates** and **Include overlooked flights**; the dots animate between the two actual selection masks at the same 75% overall coverage. Point out average error, 15–60-minute inclusion and Boeing 747-400 access. Use **Highlight Boeing 747-400** and click a dot for a concrete example. Finish with the audience and limitations beneath the visualization.
+- The demo is an offline historical replay. Bright dots represent included intervals, not live aircraft positions. The recorded fuel value is displayed only because these flights are complete.
 - `demo/advanced-template.html` is the maintained presentation source. `demo/index.html` retains the original benchmark payload needed by the analysis and notebook; it is not the recommended presentation entry point.
 - Open the [Jupyter walkthrough](notebooks/eligibility-walkthrough.ipynb) for the result tables, access chart, residual diagnostics and route-overlap check.
 - To rebuild the analysis from the publisher's data, use Python 3.11+ and allow roughly 5 GB for the trajectory archives plus extraction space:
