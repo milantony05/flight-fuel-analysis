@@ -6,8 +6,8 @@ An interactive data science project that estimates fuel use for **completed flig
 
 The research extension adds a **coverage-constrained selector**, five-fold
 out-of-fold isotonic risk calibration and empirical scaled prediction intervals.
-The visual demo embeds its aircraft image and replays three illustrative historical
-intervals before showing full-period prediction and coverage results. It remains fully
+The visual demo embeds its aircraft image and lets you inspect historical
+intervals alongside full-period prediction and coverage results. It remains fully
 self-contained in [`demo/index.html`](demo/index.html).
 
 The exploratory research layer additionally compares global, duration-Mondrian
@@ -83,7 +83,8 @@ At the same **75.01%** overall acceptance on **7,619 September validation interv
 ## Explore and reproduce
 
 - **Use one demo:** download and open [`demo/index.html`](demo/index.html) in Chrome, Edge or Firefox. It works offline; no Python installation, server or API key is needed. GitHub's file viewer displays source, so download the file before opening it.
-- **Three-minute presentation:** explain the problem in the hero, then use the cohort explorer. Choose an aircraft, change maximum interval duration and toggle tracking availability. The count, average error, median estimated fuel, error distribution and individual example update from historical records. Compare **All records** with **Coverage-aware 75%** and end with the full evaluation cards and limitations.
+- **Three-minute presentation:** click through the five project stages, then choose **Full benchmark → Prioritize accuracy → Broaden representation → Inspect the B744**. Hover or click the scatter plot to inspect an interval. Change the retention target to update the full-batch comparison. The cohort cards follow your aircraft, duration and tracking filters; the policy comparison always uses the full batch.
+- **Presentation design:** one offline dashboard with an embedded aircraft hero, clickable project lifecycle, logarithmic prediction scatter plot, interval inspector, group-coverage comparison and explicit evaluation limits. All scripts, styles, imagery and benchmark data are embedded; no external fonts or chart CDNs are required.
 - The controls filter committed historical predictions; they do not synthesize a new flight or estimate fuel from user-entered payload or weather. The dataset and trained model do not support those inputs.
 - `src/flight_fuel/demo-template.html` is the maintained source for this one-file demo. `data/benchmark-source.html` is the committed benchmark source required by analysis and replay tests.
 - Open the [Jupyter walkthrough](notebooks/eligibility-walkthrough.ipynb) for the result tables, access chart, residual diagnostics and route-overlap check.

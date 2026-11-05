@@ -792,7 +792,7 @@ def analyze(
         "row_schema": list(ROW_COLUMNS[:-1]),
         "rows": [
             [
-                row[0], round(float(row[1]), 3), round(float(row[2]), 3),
+                row[0], float(row[1]), round(float(row[2]), 3),
                 round(float(row[3]), 3), round(float(row[4]), 3), int(row[5]),
             ]
             for row in payload["rows"]

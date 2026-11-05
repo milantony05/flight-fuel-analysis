@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PresentationTests(unittest.TestCase):
     def test_all_selection_masks_match_reported_metrics(self):
-        html = (ROOT / 'demo/advanced.html').read_text()
+        html = (ROOT / 'demo/index.html').read_text()
         payload, _ = json.JSONDecoder().raw_decode(html.split('const DATA=', 1)[1])
         policies = {'risk': 'risk_only', 'greedy': 'greedy_floor',
                     'optimized': 'optimized_floor', 'calibrated': 'calibrated_floor'}
@@ -26,3 +26,14 @@ class PresentationTests(unittest.TestCase):
                     self.assertAlmostEqual(mae, expected['accepted_mae_kg'], delta=.001)
                     fuel = sum(r[4] for r in selected) / sum(r[4] for r in rows)
                     self.assertAlmostEqual(fuel, expected['accepted_reference_fuel_fraction'], delta=1e-6)
+
+    def test_duration_groups_preserve_source_boundaries(self):
+        def payload(path):
+            text = (ROOT / path).read_text()
+            return json.JSONDecoder().raw_decode(text.split('const DATA=', 1)[1])[0]
+        source = payload('data/benchmark-source.html')['rows']
+        demo = payload('demo/index.html')['rows']
+        def group(minutes):
+            return sum(minutes >= boundary for boundary in (5, 15, 60))
+        self.assertEqual([group(row[1]) for row in source],
+                         [group(row[1]) for row in demo])
